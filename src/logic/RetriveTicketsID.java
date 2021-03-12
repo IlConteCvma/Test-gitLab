@@ -4,10 +4,11 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.Reader; 
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -30,13 +31,12 @@ public class RetriveTicketsID {
 	
 	public static JSONArray readJsonArrayFromUrl(String url) throws IOException, JSONException {
 	      InputStream is = new URL(url).openStream();
-	      try {
-	    	  InputStreamReader tmp = new InputStreamReader(is, StandardCharsets.UTF_8);
-	         BufferedReader rd = new BufferedReader(tmp);
+	      try ( InputStreamReader tmp = new InputStreamReader(is, StandardCharsets.UTF_8);
+	 	         BufferedReader rd = new BufferedReader(tmp);
+	    	) 
+	      {	    	  
 	         String jsonText = readAll(rd);
-	         return new JSONArray(jsonText);
-	         
-	         
+	         return new JSONArray(jsonText);	         
 	       } finally {
 	         is.close();
 	       }
@@ -44,10 +44,12 @@ public class RetriveTicketsID {
 	   }
 
 	   public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
-	      InputStream is = new URL(url).openStream();
-	      try {
-	    	  InputStreamReader tmp = new InputStreamReader(is, StandardCharsets.UTF_8);
-	         BufferedReader rd = new BufferedReader(tmp);
+	      InputStream is = new URL(url).openStream();	     
+	      try( InputStreamReader tmp = new InputStreamReader(is, StandardCharsets.UTF_8);
+	    	   BufferedReader rd = new BufferedReader(tmp);
+	    	) 
+	      
+	      {
 	         String jsonText = readAll(rd);
 	         return new JSONObject(jsonText);
 	         
@@ -59,7 +61,7 @@ public class RetriveTicketsID {
 
 	  
 	  	   public static void main(String[] args) throws IOException, JSONException {
-			   
+	  		 Logger logger = Logger.getLogger(RetriveTicketsID.class.getSimpleName());
 			   String projName ="ACCUMULO";
 		   Integer j = 0;
 		   Integer i = 0;
@@ -79,8 +81,8 @@ public class RetriveTicketsID {
 	         for (; i < total && i < j; i++) {
 	            //Iterate through each bug
 	            String key = issues.getJSONObject(i%1000).get("key").toString();
+	            logger.log(Level.INFO,key);
 	            
-	            System.out.println(key);
 	         }  
 	      } while (i < total);
 	      
